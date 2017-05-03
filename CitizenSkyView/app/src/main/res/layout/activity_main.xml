@@ -18,7 +18,7 @@
             android:layout_height="wrap_content">
 
             <Button
-                android:id="@+id/button0"
+                android:id="@+id/help_button"
                 style="@style/Widget.AppCompat.Button.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -33,7 +33,7 @@
             android:layout_height="match_parent">
 
             <Button
-                android:id="@+id/button1"
+                android:id="@+id/start_button"
                 style="@style/Widget.AppCompat.Button"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -42,7 +42,7 @@
                 android:layout_marginTop="112dp"
                 android:background="@android:drawable/ic_menu_mylocation"
                 android:backgroundTint="@android:color/holo_blue_bright"
-                android:text="Start"
+                android:text="@string/start"
                 android:textAlignment="center"
                 android:textSize="24sp" />
         </RelativeLayout>
