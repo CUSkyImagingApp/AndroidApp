@@ -125,11 +125,12 @@ public class MainActivity extends AppCompatActivity {
         }
         if(requestCode == requestWrite) {
             if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                /*
                 try {
                     createImageFileName();
                 } catch (IOException e) {
                     e.printStackTrace();
-                }
+                }*/
             }else{
                 Toast.makeText(getApplicationContext(),
                         "File access is required to document the sky", Toast.LENGTH_SHORT).show();
@@ -232,6 +233,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //Needs to be updated in Manifest does not work for more recent versions
     private File createImageFileName() throws IOException{
         String timeOfImage = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         File imageFile = File.createTempFile(timeOfImage, ".png", skyViewImageFolder);
@@ -243,11 +245,11 @@ public class MainActivity extends AppCompatActivity {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
             if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     == PackageManager.PERMISSION_GRANTED){
-                try {
+                /*try {
                     createImageFileName();
                 } catch (IOException e) {
                     e.printStackTrace();
-                }
+                }*/
             }else{
                 if(shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)){
                     Toast.makeText(this, "The app needs to save some temperary files to your phone", Toast.LENGTH_SHORT).show();
@@ -257,12 +259,11 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }else{
-
-            try {
+            /*try {
                 createImageFileName();
             } catch (IOException e) {
                 e.printStackTrace();
-            }
+            }*/
         }
     }
 }
