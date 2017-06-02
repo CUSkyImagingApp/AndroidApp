@@ -2,19 +2,23 @@ package edu.boulder.citizenskyview.citizenskyview;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.media.ImageReader;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.provider.MediaStore;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -26,7 +30,25 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static android.os.SystemClock.uptimeMillis;
+
 public class MainActivity extends AppCompatActivity {
+
+    Handler tempH = new Handler();
+    int delay = 30000; //30 seconds
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            dispatchTakePictureIntent();
+        }
+    };
+
+    public void takeNphotos(int N){
+        long currentTime = uptimeMillis();
+        for (;N>0;N--) {
+            tempH.postAtTime(runnable, currentTime+delay*N);
+        }
+    }
 
     private static final int requestCamera = 0;
     private static final int requestWrite = 1;
@@ -138,6 +160,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+
     @Override
     public void onWindowFocusChanged(boolean focused){
         super.onWindowFocusChanged(focused);
@@ -240,6 +264,32 @@ public class MainActivity extends AppCompatActivity {
         skyViewImageName = imageFile.getAbsolutePath();
         return imageFile;
     }
+
+    static final int REQUEST_TAKE_PHOTO = 1;
+
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFileName();
+            } catch (IOException ex) {
+                Toast.makeText(getApplicationContext(), "IO Error", Toast.LENGTH_SHORT).show();
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "com.boulderSkyView.android.fileprovider",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+            }
+        }
+    }
+
+
 
     private void checkWriteToExternalStoragePermission(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
