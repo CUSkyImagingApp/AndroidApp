@@ -22,6 +22,7 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -103,7 +104,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         setupCamera();
         connectToCamera();
         createSkyViewImageFolder();
@@ -126,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
                 checkWriteToExternalStoragePermission();
             }
         });
+
     }
 
     @Override
@@ -168,10 +169,10 @@ public class MainActivity extends AppCompatActivity {
         View decorView = getWindow().getDecorView();
         if(focused){
             decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    |View.SYSTEM_UI_FLAG_FULLSCREEN
+                    //|View.SYSTEM_UI_FLAG_FULLSCREEN
                     |View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
                     |View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    |View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    //|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                     |View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
         }
     }
