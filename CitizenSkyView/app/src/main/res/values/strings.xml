@@ -4,4 +4,6 @@
     <string name="start">Start</string>
     <string name="hello">Hello World</string>
     <string name="hello_again">Hello Again</string>
+    <string name="e1">Event 1</string>
+    <string name="e2">Event 2</string>
 </resources>

@@ -26,34 +26,36 @@
             android:layout_height="85dp"
             android:background="#FFFFFF"
             android:layout_marginBottom="1dp">
+
             <TextView
                 android:id="@+id/box_text"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="@string/hello"
-                android:gravity="left"
-                android:textSize="24dp"
-                android:layout_alignParentTop="true"
                 android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="6dp" />
+                android:layout_marginTop="6dp"
+                android:gravity="left"
+                android:text="@string/e1"
+                android:textSize="24dp" />
         </RelativeLayout>
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="85dp"
             android:background="#FFFFFF"
             android:layout_marginBottom="1dp">
+
             <TextView
                 android:id="@+id/box_text2"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="@string/hello_again"
-                android:gravity="left"
-                android:textSize="24dp"
-                android:layout_alignParentTop="true"
                 android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="6dp" />
+                android:layout_marginTop="6dp"
+                android:gravity="left"
+                android:text="@string/e2"
+                android:textSize="24dp" />
         </RelativeLayout>
 
         <!--
