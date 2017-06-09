@@ -53,6 +53,10 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int requestCamera = 0;
     private static final int requestWrite = 1;
+    private static final int requestInternet = 0;
+    private static final int requestAccessFineLocation = 0;
+    private static final int requestRead = 0;
+
     private static Context mContext;
     private Button startButton;
     private Button helpButton;
@@ -108,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
         connectToCamera();
         createSkyViewImageFolder();
 
-
+        /*
         helpButton = (Button) findViewById(R.id.help_button);
         helpButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -126,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
                 checkWriteToExternalStoragePermission();
             }
         });
+        */
 
     }
 
@@ -157,6 +162,27 @@ public class MainActivity extends AppCompatActivity {
             }else{
                 Toast.makeText(getApplicationContext(),
                         "File access is required to document the sky", Toast.LENGTH_SHORT).show();
+            }
+        }
+        if(requestCode == requestRead){
+            if(grantResults[0] != PackageManager.PERMISSION_GRANTED){
+                Toast.makeText(getApplicationContext(),
+                        "File access is required to document the sky", Toast.LENGTH_SHORT).show();
+
+            }
+        }
+        if(requestCode == requestInternet){
+            if(grantResults[0] != PackageManager.PERMISSION_GRANTED){
+                Toast.makeText(getApplicationContext(),
+                        "Internet access is required to document the sky", Toast.LENGTH_SHORT).show();
+
+            }
+        }
+        if(requestCode == requestAccessFineLocation){
+            if(grantResults[0] != PackageManager.PERMISSION_GRANTED){
+                Toast.makeText(getApplicationContext(),
+                        "File access is required to document the sky", Toast.LENGTH_SHORT).show();
+
             }
         }
     }
@@ -317,4 +343,53 @@ public class MainActivity extends AppCompatActivity {
             }*/
         }
     }
+    private void checkReadToExternalStoragePermission(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED){
+
+            }else{
+                if(shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)){
+                    Toast.makeText(this, "The app needs to access tempory files on your phone", Toast.LENGTH_SHORT).show();
+
+                }
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, requestWrite);
+            }
+        }else{
+
+        }
+    }
+    private void checkInternetPermission(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            if(ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET)
+                    == PackageManager.PERMISSION_GRANTED){
+
+            }else{
+                if(shouldShowRequestPermissionRationale(Manifest.permission.INTERNET)){
+                    Toast.makeText(this, "The app needs access to the internet", Toast.LENGTH_SHORT).show();
+
+                }
+                requestPermissions(new String[]{Manifest.permission.INTERNET}, requestWrite);
+            }
+        }else{
+
+        }
+    }
+    private void checkAccessFineLocationPermission(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED){
+
+            }else{
+                if(shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)){
+                    Toast.makeText(this, "The app needs access to file locations", Toast.LENGTH_SHORT).show();
+
+                }
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, requestWrite);
+            }
+        }else{
+
+        }
+    }
+
 }

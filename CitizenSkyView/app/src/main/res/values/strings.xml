@@ -2,4 +2,6 @@
 <resources>
     <string name="app_name">Citizen Sky View</string>
     <string name="start">Start</string>
+    <string name="hello">Hello World</string>
+    <string name="hello_again">Hello Again</string>
 </resources>

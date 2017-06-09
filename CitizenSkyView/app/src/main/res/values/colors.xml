@@ -3,4 +3,6 @@
     <color name="colorPrimary">#55B9E8</color> <!-- R: 85 G: 185 B: 232 to Hex = #55B9E8 -->
     <color name="colorPrimaryDark">#55B9E8</color> <!-- #40A0D0 is a darker version of Primary blue -->
     <color name="colorAccent">#FF4081</color>
+    <color name="windowBackground">#4d4d4d</color>
+
 </resources>
