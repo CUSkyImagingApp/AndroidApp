@@ -1,5 +1,11 @@
 apply plugin: 'com.android.application'
 
+def getApiKey(String property){
+    Properties properties = new Properties()
+    properties.load(new FileInputStream("/../keys/amazon.properties"))
+    return "\"" + properties.getProperty(property) +"\""
+}
+
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
@@ -10,6 +16,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        buildConfigField "String", "AMAZON_API_KEY", getApiKey("key")
     }
     buildTypes {
         release {
