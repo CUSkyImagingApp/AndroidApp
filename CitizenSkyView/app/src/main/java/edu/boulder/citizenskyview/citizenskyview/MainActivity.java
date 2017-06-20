@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static Context mContext;
     private Button startButton;
+    private Button boxButton1;
     private Button helpButton;
 
     private boolean skyViewActive = false;
@@ -131,6 +132,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         */
+        boxButton1 = (Button) findViewById(R.id.box_button1);
+        boxButton1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getApplicationContext(), "Starting sky capture", Toast.LENGTH_SHORT).show();
+                skyViewActive = true;
+                checkWriteToExternalStoragePermission();
+            }
+        });
 
     }
 
