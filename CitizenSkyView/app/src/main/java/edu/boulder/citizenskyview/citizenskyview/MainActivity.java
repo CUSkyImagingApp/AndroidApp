@@ -56,10 +56,12 @@ public class MainActivity extends AppCompatActivity {
     private static final int requestInternet = 0;
     private static final int requestAccessFineLocation = 0;
     private static final int requestRead = 0;
+    private static final int requestVibrate = 0;
 
     private static Context mContext;
     private Button startButton;
     private Button boxButton1;
+    private Button boxButton2;
     private Button helpButton;
 
     private boolean skyViewActive = false;
@@ -142,6 +144,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        boxButton2 = (Button) findViewById(R.id.box_button2);
+        boxButton2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                checkVibrationPermission();
+                Intent myIntent = new Intent(MainActivity.this, EventActivity.class);
+                startActivity(myIntent);
+            }
+        });
     }
 
     @Override
@@ -192,6 +203,13 @@ public class MainActivity extends AppCompatActivity {
             if(grantResults[0] != PackageManager.PERMISSION_GRANTED){
                 Toast.makeText(getApplicationContext(),
                         "File access is required to document the sky", Toast.LENGTH_SHORT).show();
+
+            }
+        }
+        if(requestCode == requestVibrate){
+            if(grantResults[0] != PackageManager.PERMISSION_GRANTED){
+                Toast.makeText(getApplicationContext(),
+                        "Vibrator access is required to document the sky", Toast.LENGTH_SHORT).show();
 
             }
         }
@@ -398,6 +416,32 @@ public class MainActivity extends AppCompatActivity {
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, requestWrite);
             }
         }else{
+
+        }
+    }
+    private void checkVibrationPermission(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            if(ContextCompat.checkSelfPermission(this, Manifest.permission.VIBRATE)
+                    == PackageManager.PERMISSION_GRANTED){
+                /*try {
+                    createImageFileName();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }*/
+
+            }else{
+                if(shouldShowRequestPermissionRationale(Manifest.permission.VIBRATE)){
+                    Toast.makeText(this, "The app needs access to the phones vibrator", Toast.LENGTH_SHORT).show();
+
+                }
+                requestPermissions(new String[]{Manifest.permission.VIBRATE}, requestVibrate);
+            }
+        }else{
+            /*try {
+                    createImageFileName();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }*/
 
         }
     }

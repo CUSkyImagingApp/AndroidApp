@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="edu.boulder.citizenskyview.citizenskyview.EventActivity">
+
+    <TextView
+        android:id="@+id/event_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="Starting Event 2"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textAppearance="@android:style/TextAppearance.Material.Small"
+        android:textColor="@android:color/white"
+        android:textSize="36sp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/calibrate_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/event_text"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="80dp"
+        android:background="@color/colorPrimaryDark"
+        android:elevation="0dp"
+        android:text="Calibrate"
+        android:textAlignment="center"
+        android:textColor="@color/windowBackground"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:typeface="sans"
+        tools:clickable="true" />
+</RelativeLayout>
