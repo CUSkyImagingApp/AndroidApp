@@ -1,5 +1,6 @@
 package edu.boulder.citizenskyview.citizenskyview;
 
+
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -11,18 +12,16 @@ import android.hardware.camera2.CameraManager;
 import android.media.ImageReader;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.provider.MediaStore;
-import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -50,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
             tempH.postAtTime(runnable, currentTime+delay*N);
         }
     }
+
+    private String APIKey = BuildConfig.AMAZON_API_KEY;
 
     private static final int requestCamera = 0;
     private static final int requestWrite = 1;
