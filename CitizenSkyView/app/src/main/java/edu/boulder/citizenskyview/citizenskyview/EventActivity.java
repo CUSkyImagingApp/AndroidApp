@@ -54,6 +54,8 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event);
 
+        TrueTime.build().initialize();
+
         sensorService = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         magnetometer = sensorService.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         accelerometer = sensorService.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -65,10 +67,8 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
             public void onClick(View view) {
                 v.vibrate(10000);
                 Toast.makeText(getApplicationContext(), a, Toast.LENGTH_SHORT).show();
-
             }
         });
-
 
     }
     protected void onResume(){

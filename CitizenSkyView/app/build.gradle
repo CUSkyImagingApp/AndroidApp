@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 def getApiKey(String property){
     Properties properties = new Properties()
-    properties.load(new FileInputStream("/../keys/amazon.properties"))
+    properties.load(new FileInputStream("../../keys/amazon.properties"))
     return "\"" + properties.getProperty(property) +"\""
 }
 
@@ -26,6 +26,7 @@ android {
     }
 }
 
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
@@ -45,4 +46,9 @@ dependencies {
     compile 'com.amazonaws:aws-android-sdk-core:2.2.+'
     compile 'com.amazonaws:aws-android-sdk-s3:2.2.+'
     compile 'com.amazonaws:aws-android-sdk-ddb:2.2.+'
+}
+
+//True Time:
+dependencies {
+    'com.github.instacart.truetime-android:library:<release-version>'
 }
