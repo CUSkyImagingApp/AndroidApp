@@ -8,7 +8,7 @@ def getApiKey(String property){
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion '25.0.0'
     defaultConfig {
         applicationId "edu.boulder.citizenskyview.citizenskyview"
         minSdkVersion 21
@@ -26,9 +26,15 @@ android {
     }
 }
 
+repositories {
+    maven {
+        url "https://jitpack.io"
+    }
+}
+
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
@@ -50,5 +56,5 @@ dependencies {
 
 //True Time:
 dependencies {
-    'com.github.instacart.truetime-android:library:<release-version>'
+    compile 'com.github.instacart.truetime-android:library-extension-rx:2.1'
 }

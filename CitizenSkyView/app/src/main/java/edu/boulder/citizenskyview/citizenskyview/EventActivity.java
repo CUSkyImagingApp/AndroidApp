@@ -11,6 +11,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
+import com.instacart.library.truetime.TrueTimeRx;
+import com.instacart.library.truetime.extensionrx.*;
 /*
 public class EventActivity extends AppCompatActivity {
 
@@ -54,7 +57,7 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event);
 
-        TrueTime.build().initialize();
+        TrueTimeRx.build();
 
         sensorService = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         magnetometer = sensorService.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
