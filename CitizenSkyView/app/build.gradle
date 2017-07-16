@@ -1,9 +1,9 @@
 apply plugin: 'com.android.application'
 
-def getApiKey(String property){
+def getApiKey(String property) {
     Properties properties = new Properties()
     properties.load(new FileInputStream("../../keys/amazon.properties"))
-    return "\"" + properties.getProperty(property) +"\""
+    return "\"" + properties.getProperty(property) + "\""
 }
 
 android {
@@ -25,7 +25,11 @@ android {
         }
     }
 }
-
+repositories {
+    jcenter()
+    maven {url "https://jitpack.io"}
+    maven {url "https://s3.amazonaws.com/repo.commonsware.com"}
+}
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
@@ -50,5 +54,16 @@ dependencies {
 
 //True Time:
 dependencies {
-    'com.github.instacart.truetime-android:library:<release-version>'
+    compile 'com.android.support.constraint:constraint-layout:+'
+}
+dependencies {
+    compile 'com.github.instacart.truetime-android:library:2.1'
+    compile 'com.jakewharton:butterknife:8.7.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.7.0'
+}
+
+dependencies {
+    compile 'com.commonsware.cwac:cam2:0.7.6'
+    compile 'com.commonsware.cwac:security:0.6.+'
+    compile 'com.squareup.moshi:moshi:1.3.1'
 }

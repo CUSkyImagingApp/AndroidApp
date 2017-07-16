@@ -4,5 +4,6 @@
     <color name="colorPrimaryDark">#55b9e8</color> <!-- #40A0D0 is a darker version of Primary blue -->
     <color name="colorAccent">#FF4081</color>
     <color name="windowBackground">#4d4d4d</color>
+    <color name="colorBlack">#000000</color>
 
 </resources>

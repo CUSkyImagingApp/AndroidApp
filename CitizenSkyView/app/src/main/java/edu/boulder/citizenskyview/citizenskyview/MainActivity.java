@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         */
-        boxButton1 = (Button) findViewById(R.id.box_button1);
+        boxButton1 = (Button) findViewById(R.id.event1);
         boxButton1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -145,7 +145,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        boxButton2 = (Button) findViewById(R.id.box_button2);
+        //UPDATE The second event list starts a new event called EventActiviy when clicked
+        boxButton2 = (Button) findViewById(R.id.event2);
         boxButton2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

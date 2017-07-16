@@ -5,4 +5,16 @@
     <string name="hello">Event 1</string>
     <string name="hello_again">Event 2</string>
 
+    <string name="true_time">Tru Time: %1$s [MST]</string>
+    <string name="dev_time">Dev Time: %1$s [MST]</string>
+
+    <string name="previous">Previous</string>
+    <string name="capture">Capture</string>
+    <string name="wizard_page_1_instructions">Please place the device in portrait mode, then click the Capture button, then take two pictures/record two videos (rear-facing, then front-facing).</string>
+    <string name="wizard_page_2_instructions">Please place the device in landscape mode, then click the Capture button, then take two pictures/record two videos (rear-facing, then front-facing).</string>
+    <string name="wizard_page_3_instructions">The ZIP file shown below on external storage contains the test results to submit with your issue.</string>
+    <string name="share">Share</string>
+    <string name="finish">Finish</string>
+    <string name="msg_perms_missing">Sorry, but we cannot proceed without permission -- try running the app again!</string>
+
 </resources>
