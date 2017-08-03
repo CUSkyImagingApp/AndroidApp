@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         public void onOpened(@NonNull CameraDevice cameraDevice) {
             skyViewCamera = cameraDevice;
             //for testing remove later
-            Toast.makeText(getApplicationContext(), "Camera Found!", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), "Camera Found!", Toast.LENGTH_SHORT).show();
         }
 
         @Override

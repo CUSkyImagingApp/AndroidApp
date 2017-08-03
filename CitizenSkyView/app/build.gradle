@@ -27,8 +27,8 @@ android {
 }
 repositories {
     jcenter()
-    maven {url "https://jitpack.io"}
-    maven {url "https://s3.amazonaws.com/repo.commonsware.com"}
+    maven { url "https://jitpack.io" }
+    maven { url "https://s3.amazonaws.com/repo.commonsware.com" }
 }
 
 dependencies {
@@ -63,7 +63,9 @@ dependencies {
 }
 
 dependencies {
-    compile 'com.commonsware.cwac:cam2:0.7.6'
-    compile 'com.commonsware.cwac:security:0.6.+'
-    compile 'com.squareup.moshi:moshi:1.3.1'
+    compile 'com.android.support.constraint:constraint-layout:+'
+}
+
+dependencies {
+    compile 'com.kevalpatel2106:hiddencamera:1.3.2'
 }
