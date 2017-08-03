@@ -6,6 +6,7 @@ def getApiKey(String property) {
     return "\"" + properties.getProperty(property) + "\""
 }
 
+
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
@@ -16,7 +17,8 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        buildConfigField "String", "AMAZON_API_KEY", getApiKey("key")
+        buildConfigField "String", "AMAZON_API_KEY", getApiKey("Akey")
+        buildConfigField "String", "DYNAMODB_API_KEY", getApiKey("DBKey")
     }
     buildTypes {
         release {
@@ -50,6 +52,7 @@ dependencies {
     compile 'com.amazonaws:aws-android-sdk-core:2.2.+'
     compile 'com.amazonaws:aws-android-sdk-s3:2.2.+'
     compile 'com.amazonaws:aws-android-sdk-ddb:2.2.+'
+    compile 'com.amazonaws:aws-android-sdk-ddb-mapper:2.2.+'
 }
 
 //True Time:

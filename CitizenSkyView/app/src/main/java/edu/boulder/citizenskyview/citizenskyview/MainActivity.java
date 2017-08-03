@@ -25,14 +25,33 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+
+
 import static android.os.SystemClock.uptimeMillis;
 
 public class MainActivity extends AppCompatActivity {
+
+    CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
+            getApplicationContext(),
+            BuildConfig.DYNAMODB_API_KEY, // Identity pool ID
+            Regions.US_WEST_2 // Region
+    );
+
+    AmazonDynamoDBClient ddbClient = new AmazonDynamoDBClient(credentialsProvider);
+    DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
+    SkyViewEvent e1 = new SkyViewEvent();
+    SkyViewPhoto p1 = new SkyViewPhoto();
+
 
     Handler tempH = new Handler();
     int delay = 30000; //30 seconds
