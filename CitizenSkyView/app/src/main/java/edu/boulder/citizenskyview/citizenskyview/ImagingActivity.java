@@ -2,12 +2,17 @@ package edu.boulder.citizenskyview.citizenskyview;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -18,6 +23,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.androidhiddencamera.CameraConfig;
@@ -28,6 +34,9 @@ import com.androidhiddencamera.config.CameraImageFormat;
 import com.androidhiddencamera.config.CameraResolution;
 import com.androidhiddencamera.config.CameraRotation;
 import com.instacart.library.truetime.TrueTime;
+
+import org.w3c.dom.Text;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -46,13 +55,18 @@ public class ImagingActivity extends HiddenCameraActivity {
     private CameraConfig mCameraConfig;
     int num = 0;
     @BindView(R.id.btn_takepicture) Button start_btn;
+    @BindView(R.id.finished) TextView finishedText;
+    Vibrator v;
 
-    Handler handler = new Handler();
+
+
     Runnable syncUp = new Runnable() {
         @Override
         public void run() {
+
+
             int second = 61;
-            while (num < 3) {
+            while (num < 4) {
                 while (second % 5 != 0) {
                     try {
                         Thread.sleep(1000);
@@ -61,7 +75,9 @@ public class ImagingActivity extends HiddenCameraActivity {
                     }
                     second = getSecond();
                 }
-                takePicture();
+                if (num < 3){
+                    takePicture();
+                }
                 num++;
                 try {
                     Thread.sleep(1000);
@@ -69,8 +85,13 @@ public class ImagingActivity extends HiddenCameraActivity {
                     e.printStackTrace();
                 }
                 second = getSecond();
-
+                if (num > 3){
+                    v.vibrate(3000);
+                }
             }
+            Intent returnIntent = new Intent();
+            setResult(RESULT_OK, returnIntent);
+            finish();
 
         }
     };
@@ -85,6 +106,7 @@ public class ImagingActivity extends HiddenCameraActivity {
         start_btn.setVisibility(View.GONE);
         Thread eventThread = new Thread(syncUp);
         eventThread.start();
+
     }
 
     @Override
@@ -96,6 +118,9 @@ public class ImagingActivity extends HiddenCameraActivity {
         getSupportActionBar().hide();
         setContentView(R.layout.activity_imaging);
         ButterKnife.bind(this);
+
+        v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
 
         mCameraConfig = new CameraConfig()
                 .getBuilder(this)
@@ -116,13 +141,14 @@ public class ImagingActivity extends HiddenCameraActivity {
         }
 
         //Take a picture
-        findViewById(R.id.btn_takepicture).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Take picture using the camera without preview.
-                syncNow();
-            }
-        });
+//        findViewById(R.id.btn_takepicture).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                //Take picture using the camera without preview.
+//                syncNow();
+//            }
+//        });
+        syncNow();
 
     }
 

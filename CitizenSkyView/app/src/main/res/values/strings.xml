@@ -12,4 +12,8 @@
 
     <string name="picture">Picture</string>
     <string name="hello_world">Hello world!</string>
+    <string name="event_string">Welcome to the\n%1$s\nEvent</string>
+    <string name="event_button_str">%1$s Event</string>
+    <string name="instructions">Please flip your phone over screen side down and turn it until it points North and the vibration stops</string>
+    <string name="finished_str">Please go to the home screen</string>
 </resources>
