@@ -53,16 +53,19 @@ import static android.os.SystemClock.uptimeMillis;
 
 public class MainActivity extends AppCompatActivity {
 
-//    CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
-//            MainActivity.getContext(),
-//            BuildConfig.DYNAMODB_API_KEY, // Identity pool ID
-//            Regions.US_WEST_2 // Region
-//    );
-//
-//    AmazonDynamoDBClient ddbClient = new AmazonDynamoDBClient(credentialsProvider);
-//    DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
-//    SkyViewEvent e1 = new SkyViewEvent();
-//    SkyViewPhoto p1 = new SkyViewPhoto();
+   /* CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
+            getApplicationContext(),
+            BuildConfig.DYNAMODB_API_KEY,
+            Regions.US_WEST_2
+    );
+    */
+   //Toast.makeText(MainActivity.this, BuildConfig.DYNAMODB_API_KEY, Toast.LENGTH_SHORT).show();
+
+/*
+    AmazonDynamoDBClient ddbClient = new AmazonDynamoDBClient(credentialsProvider);
+    DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
+    SkyViewEvent e1 = new SkyViewEvent();
+    SkyViewPhoto p1 = new SkyViewPhoto();*/
 
 
     Handler tempH = new Handler();
@@ -148,6 +151,12 @@ public class MainActivity extends AppCompatActivity {
         //getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
+                getApplicationContext(),
+                BuildConfig.DYNAMODB_API_KEY,
+                Regions.US_WEST_2
+        );
 
         setupCamera();
         connectToCamera();
