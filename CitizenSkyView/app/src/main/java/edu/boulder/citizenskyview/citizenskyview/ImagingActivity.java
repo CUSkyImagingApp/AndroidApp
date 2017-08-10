@@ -7,7 +7,12 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
@@ -16,6 +21,7 @@ import android.os.Vibrator;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.View;
@@ -42,6 +48,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -50,12 +57,16 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+
 public class ImagingActivity extends HiddenCameraActivity {
 
     private CameraConfig mCameraConfig;
     int num = 0;
     @BindView(R.id.btn_takepicture) Button start_btn;
     @BindView(R.id.finished) TextView finishedText;
+    String longitude;
+    String latitude;
+    String a =  "0";
     Vibrator v;
 
 
@@ -95,12 +106,6 @@ public class ImagingActivity extends HiddenCameraActivity {
 
         }
     };
-    public int getSecond(){
-        Date time = TrueTime.now();
-        SimpleDateFormat tFormat = new SimpleDateFormat("ss", Locale.US);
-        String sec = tFormat.format(time);
-        return Integer.valueOf(sec);
-    }
 
     private void syncNow(){
         start_btn.setVisibility(View.GONE);
@@ -148,6 +153,7 @@ public class ImagingActivity extends HiddenCameraActivity {
 //                syncNow();
 //            }
 //        });
+        getPhoneLocation();
         syncNow();
 
     }
@@ -175,15 +181,100 @@ public class ImagingActivity extends HiddenCameraActivity {
         //Display the image to the image view
         //Toast.makeText(ImagingActivity.this, rootDir.toString(), Toast.LENGTH_LONG).show();
         //((ImageView) findViewById(R.id.texture)).setImageBitmap(bitmap);
+        String name = getFilesDir().getPath()+"/" + generateName() + ".jpeg";
+        File newpic = new File(name);
 
-        File newpic = new File(imageFile.getParent(),"newpic"+num+".jpeg");
-        if(imageFile.renameTo(newpic)){
-            Toast.makeText(ImagingActivity.this, "Saved: " + newpic.getName() , Toast.LENGTH_LONG).show();
-        } else{
-            Toast.makeText(ImagingActivity.this, "failure", Toast.LENGTH_LONG).show();
+        FileInputStream inputStream;
+        FileOutputStream outputStream;
+        try{
+            inputStream = new FileInputStream(imageFile);
+            outputStream = new FileOutputStream(newpic);
+            byte[] buffer = new byte[1024];
+            int length;
+            while((length = inputStream.read(buffer))>0){
+                outputStream.write(buffer, 0, length);
+            }
+            inputStream.close();
+            outputStream.close();
+            imageFile.delete();
+        } catch (Exception e){
+            e.printStackTrace();
         }
+//        if(imageFile.renameTo(newpic)){
+//            Toast.makeText(ImagingActivity.this, "Saved: " + newpic.getName() , Toast.LENGTH_LONG).show();
+//        } else{
+//            Toast.makeText(ImagingActivity.this, "failure", Toast.LENGTH_LONG).show();
+//        }
 
     }
+
+    public String getPhoneLocation(){
+        String r = "";
+        LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        Location location;
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            lm.requestSingleUpdate(LocationManager.GPS_PROVIDER, new LocationListener(){
+                @Override
+                public void onLocationChanged(Location location) {
+                    // reverse geo-code location
+
+                }
+
+                @Override
+                public void onProviderDisabled(String provider) {
+                    // Auto-generated method stub
+
+                }
+
+                @Override
+                public void onProviderEnabled(String provider) {
+                    // Auto-generated method stub
+
+                }
+
+                @Override
+                public void onStatusChanged(String provider, int status,
+                                            Bundle extras) {
+                    // Auto-generated method stub
+
+                }
+            }, null);
+            location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            longitude = Double.toString(location.getLongitude());
+            latitude = Double.toString(location.getLatitude());
+            r = latitude + longitude;
+        } else {
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+//            Toast.makeText(ImagingActivity.this, "Need Location Permission", Toast.LENGTH_LONG).show();
+//            v.vibrate(3000);
+//            Intent returnIntent = new Intent();
+//            setResult(RESULT_CANCELED, returnIntent);
+//            finish();
+        }
+
+        return r;
+    }
+
+
+
+    public String generateName(){
+        String r = "";
+        String d = getDay();
+        String h = Integer.toString(getHour());
+        String m = Integer.toString(getMinute());
+        String s = "";
+        if(getSecond() < 30){
+            s = "00";
+        } else {
+            s = "30";
+        }
+        String ret = latitude + "_" + longitude + "_" + a + "_" + d + "T" + h + "_" + m + "_" + s;
+        r = ret.replace(".", ",");
+        return r;
+    }
+
+
 
 
     @Override
@@ -210,6 +301,31 @@ public class ImagingActivity extends HiddenCameraActivity {
                 Toast.makeText(this, "Your device does not have front camera.", Toast.LENGTH_LONG).show();
                 break;
         }
+    }
+
+    public int getSecond(){
+        Date time = TrueTime.now();
+        SimpleDateFormat tFormat = new SimpleDateFormat("ss", Locale.US);
+        String sec = tFormat.format(time);
+        return Integer.valueOf(sec);
+    }
+    public int getMinute(){
+        Date time = TrueTime.now();
+        SimpleDateFormat tFormat = new SimpleDateFormat("mm", Locale.US);
+        String min = tFormat.format(time);
+        return Integer.valueOf(min);
+    }
+    public int getHour(){
+        Date time = TrueTime.now();
+        SimpleDateFormat tFormat = new SimpleDateFormat("hh", Locale.US);
+        String hour = tFormat.format(time);
+        return Integer.valueOf(hour);
+    }
+    public String getDay(){
+        Date time = TrueTime.now();
+        SimpleDateFormat tFormat = new SimpleDateFormat("yyyy_MM_dd", Locale.US);
+        String day = tFormat.format(time);
+        return day;
     }
 
 }

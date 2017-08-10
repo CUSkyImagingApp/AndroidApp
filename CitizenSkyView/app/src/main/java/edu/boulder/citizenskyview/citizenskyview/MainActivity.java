@@ -86,10 +86,10 @@ public class MainActivity extends AppCompatActivity {
 
     private String APIKey = BuildConfig.AMAZON_API_KEY;
 
-    private static final int requestCamera = 0;
+    private static final int requestCamera = 1;
     private static final int requestWrite = 1;
     private static final int requestInternet = 0;
-    private static final int requestAccessFineLocation = 0;
+    private static final int requestAccessFineLocation = 1;
     private static final int requestRead = 0;
     private static final int requestVibrate = 0;
 
@@ -102,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.event1) Button event1Box;
     @BindView(R.id.event2) Button event2Box;
     @BindView(R.id.event3) Button event3Box;
+    @BindView(R.id.upload_btn) Button uploadBtn;
 
     private boolean skyViewActive = false;
     private ImageReader skyViewImageReader;
@@ -161,6 +162,11 @@ public class MainActivity extends AppCompatActivity {
         setupCamera();
         connectToCamera();
         createSkyViewImageFolder();
+        checkAccessFineLocationPermission();
+        checkInternetPermission();
+        checkVibrationPermission();
+        checkReadToExternalStoragePermission();
+        checkWriteToExternalStoragePermission();
 
         updateEventFile();
         updateEventButtons();
@@ -189,6 +195,11 @@ public class MainActivity extends AppCompatActivity {
     @OnClick(R.id.event3)
     public void event3Launch(){
         launchEvent(3);
+    }
+    @OnClick(R.id.upload_btn)
+    public void uploadLaunch(){
+        Intent myIntent = new Intent(MainActivity.this, UploadActivity.class);
+        startActivity(myIntent);
     }
 
     public void updateEventFile(){
@@ -310,6 +321,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
         if(requestCode == requestCamera){
             if(grantResults[0] != PackageManager.PERMISSION_GRANTED){
                 Toast.makeText(this,
@@ -526,7 +538,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "The app needs to access tempory files on your phone", Toast.LENGTH_SHORT).show();
 
                 }
-                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, requestWrite);
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, requestRead);
             }
         }else{
 
@@ -542,7 +554,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "The app needs access to the internet", Toast.LENGTH_SHORT).show();
 
                 }
-                requestPermissions(new String[]{Manifest.permission.INTERNET}, requestWrite);
+                requestPermissions(new String[]{Manifest.permission.INTERNET}, requestInternet);
             }
         }else{
 
@@ -558,7 +570,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "The app needs access to file locations", Toast.LENGTH_SHORT).show();
 
                 }
-                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, requestWrite);
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, requestAccessFineLocation);
             }
         }else{
 

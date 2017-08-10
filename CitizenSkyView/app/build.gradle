@@ -18,7 +18,7 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "AMAZON_API_KEY", getApiKey("Akey")
-        buildConfigField "String", "DYNAMODB_API_KEY", getApiKey("DBKey")
+        buildConfigField "String", "DYNAMODB_API_KEY", getApiKey("DBkey")
     }
     buildTypes {
         release {

@@ -30,6 +30,8 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     +
     <uses-feature android:name="android.hardware.camera2.full" />
+    +
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -52,8 +54,16 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".ImagingActivity"
-            android:theme="@style/AppTheme" />
-        <activity android:name=".UploadActivity"></activity>
+            android:theme="@style/ImagingTheme" />
+        <activity
+            android:name=".UploadActivity"
+            android:theme="@style/AppTheme"/>
+        <service
+            android:name="com.amazonaws.mobileconnectors.s3.transferutility.TransferService"
+            android:enabled="true" />
     </application>
+
+
+
 
 </manifest>
