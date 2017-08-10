@@ -156,6 +156,12 @@ public class MainActivity extends AppCompatActivity {
         updateEventFile();
         updateEventButtons();
 
+        CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
+        MainActivity.getContext(),
+        BuildConfig.DYNAMODB_API_KEY, // Identity pool ID
+        Regions.US_WEST_2 // Region
+        );
+
 
 //        boxButton1 = (Button) findViewById(R.id.event1);
 //        boxButton1.setOnClickListener(new View.OnClickListener() {
