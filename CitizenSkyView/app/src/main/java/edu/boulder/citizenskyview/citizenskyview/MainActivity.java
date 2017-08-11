@@ -98,6 +98,9 @@ public class MainActivity extends AppCompatActivity {
     private Button boxButton1;
     private Button boxButton2;
     private Button helpButton;
+    private CognitoCachingCredentialsProvider credentialsProvider;
+    private AmazonDynamoDBClient ddbClient;
+    private DynamoDBMapper mapper;
 
     @BindView(R.id.event1) Button event1Box;
     @BindView(R.id.event2) Button event2Box;
@@ -153,11 +156,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
-                getApplicationContext(),
-                BuildConfig.DYNAMODB_API_KEY,
-                Regions.US_WEST_2
-        );
+
 
         setupCamera();
         connectToCamera();
@@ -170,6 +169,13 @@ public class MainActivity extends AppCompatActivity {
 
         updateEventFile();
         updateEventButtons();
+        credentialsProvider = new CognitoCachingCredentialsProvider(
+                getApplicationContext(),
+                BuildConfig.DYNAMODB_API_KEY,
+                Regions.US_WEST_2
+        );
+        ddbClient = new AmazonDynamoDBClient(credentialsProvider);
+        mapper = new DynamoDBMapper(ddbClient);
 
 
 //        boxButton1 = (Button) findViewById(R.id.event1);
@@ -200,6 +206,10 @@ public class MainActivity extends AppCompatActivity {
     public void uploadLaunch(){
         Intent myIntent = new Intent(MainActivity.this, UploadActivity.class);
         startActivity(myIntent);
+    }
+
+    public void getEventFromServer(){
+
     }
 
     public void updateEventFile(){

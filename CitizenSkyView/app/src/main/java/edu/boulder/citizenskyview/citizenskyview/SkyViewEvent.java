@@ -9,8 +9,9 @@ class SkyViewEvent {
     private String eventName;
     private String end;
     private String start;
+    private String name;
 
-    @DynamoDBIndexRangeKey(attributeName = "EventName")
+    @DynamoDBHashKey(attributeName = "EventName")
     public String getEvetName() {
         return eventName;
     }
@@ -34,7 +35,16 @@ class SkyViewEvent {
         return start;
     }
 
-    public void setHardCover(String start) {
+    public void setStart(String start) {
         this.start = start;
+    }
+
+    @DynamoDBAttribute(attributeName = "Name")
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
