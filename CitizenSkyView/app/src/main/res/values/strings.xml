@@ -14,6 +14,11 @@
     <string name="hello_world">Hello world!</string>
     <string name="event_string">Welcome to the\n%1$s\nEvent</string>
     <string name="event_button_str">%1$s Event</string>
-    <string name="instructions">Please flip your phone over screen side down and turn it until it points North and the vibration stops</string>
-    <string name="finished_str">Please go to the home screen</string>
+    <string name="instructions">Please flip your phone over screen side down and turn it until it points North and vibrates 5 times in a row</string>
+    <string name="finished_str">The event is over. Thank you very much for participating! Please press the UPLOAD PHOTOS button on the home page when you are ready.</string>
+    <string name="failed_north">Unable to find North. Please exit the app and try again.</string>
+    <string name="failed_sync">Unable to sync time. Check internet connectivity and please try again</string>
+    <string name="empty_event">Empty Event</string>
+    <string name="upload">Upload Photos</string>
+    <string name="empty_event_time">1/1/00 00:00 - 00:00 \n Event</string>
 </resources>

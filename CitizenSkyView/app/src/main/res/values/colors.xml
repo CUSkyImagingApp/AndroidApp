@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#35728f</color> <!-- R: 85 G: 185 B: 232 to Hex = #55B9E8 -->
-    <color name="colorPrimaryDark">#55b9e8</color> <!-- #40A0D0 is a darker version of Primary blue -->
+    <color name="colorPrimary">#454545</color> <!-- R: 85 G: 185 B: 232 to Hex = #55B9E8 -->
+    <color name="colorPrimaryDark">#000000</color> <!-- #40A0D0 is a darker version of Primary blue -->
     <color name="colorAccent">#FF4081</color>
-    <color name="windowBackground">#4d4d4d</color>
+    <color name="windowBackground">#ebebeb</color>
     <color name="colorBlack">#000000</color>
+    <color name="colorGold">#cfb97d</color>
     <color name="control_background">#cc4285f4</color>
 
 </resources>

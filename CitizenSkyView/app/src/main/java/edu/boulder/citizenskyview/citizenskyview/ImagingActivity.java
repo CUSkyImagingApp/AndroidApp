@@ -4,20 +4,13 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
+
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.os.Environment;
-import android.os.Handler;
 import android.os.Vibrator;
+import android.provider.CalendarContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -53,7 +46,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -62,11 +57,13 @@ public class ImagingActivity extends HiddenCameraActivity {
 
     private CameraConfig mCameraConfig;
     int num = 0;
-    @BindView(R.id.btn_takepicture) Button start_btn;
-    @BindView(R.id.finished) TextView finishedText;
+//    @BindView(R.id.btn_takepicture) Button start_btn;
+//    @BindView(R.id.finished) TextView finishedText;
     String longitude;
     String latitude;
     String a =  "0";
+    Date eventStart = new Date();
+    Calendar eventEnd = Calendar.getInstance();
     Vibrator v;
 
 
@@ -77,8 +74,9 @@ public class ImagingActivity extends HiddenCameraActivity {
 
 
             int second = 61;
-            while (num < 4) {
-                while (second % 5 != 0) {
+            Date curTime = TrueTime.now();
+            while (num < 240 && eventStart.compareTo(curTime) * curTime.compareTo(eventEnd.getTime()) >= 0) {
+                while (second % 30 != 0) {
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
@@ -86,38 +84,43 @@ public class ImagingActivity extends HiddenCameraActivity {
                     }
                     second = getSecond();
                 }
-                if (num < 3){
+                if (num < 60){
                     takePicture();
                 }
                 num++;
+                curTime = TrueTime.now();
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
                 second = getSecond();
-                if (num > 3){
-                    v.vibrate(3000);
-                }
+
+
             }
-            Intent returnIntent = new Intent();
-            setResult(RESULT_OK, returnIntent);
-            finish();
+            v.vibrate(5000);
+            done();
 
         }
     };
 
     private void syncNow(){
-        start_btn.setVisibility(View.GONE);
+//        start_btn.setVisibility(View.GONE);
         Thread eventThread = new Thread(syncUp);
         eventThread.start();
 
+    }
+    private void done(){
+        Intent returnIntent = getIntent();
+        setResult(RESULT_OK, returnIntent);
+        finish();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
@@ -126,6 +129,8 @@ public class ImagingActivity extends HiddenCameraActivity {
 
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
+        Intent myIntent = getIntent();
+        a = myIntent.getStringExtra("azimuth");
 
         mCameraConfig = new CameraConfig()
                 .getBuilder(this)
@@ -154,6 +159,7 @@ public class ImagingActivity extends HiddenCameraActivity {
 //            }
 //        });
         getPhoneLocation();
+        setTime();
         syncNow();
 
     }
@@ -254,6 +260,20 @@ public class ImagingActivity extends HiddenCameraActivity {
         }
 
         return r;
+    }
+
+    public void setTime(){
+        String datePattern = "yyyy-MM-dd HH:mm:ss";
+        SimpleDateFormat dateFormat = new SimpleDateFormat(datePattern);
+        Intent myIntent = getIntent();
+        String dateStr = myIntent.getStringExtra("Date");
+        try{
+            eventStart = dateFormat.parse(dateStr);
+        } catch(ParseException e) {
+            e.printStackTrace();
+        }
+        eventEnd.setTime(eventStart);
+        eventEnd.add(Calendar.MINUTE, 2);
     }
 
 

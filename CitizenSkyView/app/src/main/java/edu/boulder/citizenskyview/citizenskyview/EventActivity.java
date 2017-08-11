@@ -33,9 +33,7 @@ import java.util.TimeZone;
 
 public class EventActivity extends AppCompatActivity implements SensorEventListener{
 
-    private Button vibrateButton;
-    private Button startButton;
-    private Button trueTimeBtn;
+
     private static final String TAG = EventActivity.class.getSimpleName();
     Vibrator v;
     private static SensorManager sensorService;
@@ -45,23 +43,30 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
     float[] mGeomagnetic;
     float azimuth;
     String a =  "0";
+    String eventStart;
     boolean calibrated = false;
     boolean launch = false;
     boolean north = false;
     int n = 0;
+    int truTime = 0;
+    static final int IMAGING_REQUEST = 1;
+    @BindView(R.id.start_event) Button startButton;
     @BindView(R.id.event_text) TextView eventText;
 
-    CountDownTimer cdt = new CountDownTimer(5000, 500){
+    CountDownTimer cdt = new CountDownTimer(32000, 800){
         public void onTick(long millisUntilFinished){
             if(north){
-                //
+                v.vibrate(600);
+                n++;
+                if(n > 5){
+                    startImaging();
+                }
             }else{
-                v.vibrate(300);
+                n = 0;
             }
         }
         public void onFinish(){
-            v.cancel();
-            startImaging();
+            northFailed();
         }
     };
     CountDownTimer waitEvent = new CountDownTimer(4000, 4000) {
@@ -83,44 +88,18 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
 
         @Override
         public void onFinish() {
-            startImaging();
+            if(!TrueTime.isInitialized() && truTime > 10){
+                v.vibrate(5000);
+                eventText.setText(getString(R.string.failed_sync));
+            }
+            else {
+                truTime++;
+                startImaging();
+            }
         }
     };
 
-    Handler handler = new Handler();
-    Runnable calibrate = new Runnable(){
-        @Override
-        public void run(){
-            n+=1;
-            Toast.makeText(EventActivity.this, n, Toast.LENGTH_SHORT).show();
-//            n += 1;
-//            int i = 0;
-//            float R[] = new float[9];
-//            float[] orientationValues = new float[3];
-//            while(i < 10 && !calibrated){
-//                SensorManager.getOrientation(R, orientationValues);
-//                azimuth = orientationValues[0];
-//                a = String.valueOf(azimuth);
-//                Toast.makeText(EventActivity.this, a, Toast.LENGTH_SHORT).show();
-//                try {
-//                    if(Float.valueOf(a) > -0.09 && Float.valueOf(a) < 0.09 ) {
-//                        n = n + 1;
-//                    } else {
-//                        n = 0;
-//                        v.vibrate(300);
-//                    }
-//                    if(n>=6){
-//                        calibrated = true;
-//                    }
-//                    Thread.sleep(500);
-//                    i= i + 1;
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
 
-        }
-    };
 
 
     @Override
@@ -133,16 +112,8 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
         magnetometer = sensorService.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         accelerometer = sensorService.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
-        //UPDATE Calibrate button causes phone to vibrate for 10 seconds
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE); //v is a Vibrator used as a variable
-//        vibrateButton = (Button) findViewById(R.id.calibrate_button); //set variable for button calibrate_button
-//        vibrateButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) { //If calibrate_button is clicked do:
-//                v.vibrate(10000);
-//                Toast.makeText(getApplicationContext(), a, Toast.LENGTH_SHORT).show();
-//            }
-//        });
+
 
         //UPDATE Initialize TrueTime
         new InitTrueTimeAsyncTask().execute();
@@ -154,13 +125,13 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
 
     public void setUpEvent(){
         Intent myIntent = getIntent();
-        String timeStr = myIntent.getStringExtra("Date");
+        eventStart = myIntent.getStringExtra("Date");
         String datePattern = "yyyy-MM-dd HH:mm:ss";
         SimpleDateFormat dateFormat = new SimpleDateFormat(datePattern);
         dateFormat.setTimeZone(TimeZone.getTimeZone("MST"));
         Date eDate = new Date();
         try{
-            eDate = dateFormat.parse(timeStr);
+            eDate = dateFormat.parse(eventStart);
         } catch(ParseException e) {
             e.printStackTrace();
         }
@@ -176,16 +147,7 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
         sensorService.registerListener(this, accelerometer,SensorManager.SENSOR_DELAY_UI);
         sensorService.registerListener(this, magnetometer,SensorManager.SENSOR_DELAY_UI);
     }
-//    //UPDATE Another way to set up a button click listener:
-//    @OnClick(R.id.time_event) //Do following function when time_event button is clicked
-//    public void onBtnPush(){
-//        if (!TrueTime.isInitialized()) {
-//            Toast.makeText(this, "Sorry TrueTime not yet initialized. Trying again.", Toast.LENGTH_SHORT).show();
-//            new InitTrueTimeAsyncTask().execute();
-//            return;
-//        }
-//        //UPDATE Displays true time and device time
-//    }
+
     //UPDATE Function for formatting date
     private String formatDate(Date date, String pattern, TimeZone timeZone) {
         DateFormat format = new SimpleDateFormat(pattern, Locale.ENGLISH);
@@ -195,6 +157,7 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
 
     @OnClick(R.id.start_event)  //UPDATE launch ImagingActivity on start_event button
     public void imageBtnPush() {
+        startButton.setVisibility(View.INVISIBLE);
         eventText.setText(getText(R.string.instructions));
         waitEvent.start();
 //
@@ -202,22 +165,36 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
     }
 
     public void startImaging(){
+        cdt.cancel();
         if (!TrueTime.isInitialized()) {
             new InitTrueTimeAsyncTask().execute();
             trueTimeWait.start();
         }
         else{
             Intent myIntent = new Intent(EventActivity.this, ImagingActivity.class);
-            startActivityForResult(myIntent, RESULT_OK);
+            myIntent.putExtra("azimuth", a);
+            myIntent.putExtra("Date", eventStart);
+            startActivityForResult(myIntent, IMAGING_REQUEST);
         }
 
     }
+
+    public void northFailed(){
+        eventText.setText(getText(R.string.failed_north));
+        v.vibrate(5000);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        if(resultCode == RESULT_OK){
-            eventText.setText(getText(R.string.finished_str));
+        if(requestCode == IMAGING_REQUEST){
+            if(resultCode == RESULT_OK){
+                eventText.setTextSize(24);
+                eventText.setText(getText(R.string.finished_str));
+            }
+            else if(resultCode == RESULT_CANCELED){
+                //
+            }
         }
-
     }
 
 
