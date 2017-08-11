@@ -273,7 +273,7 @@ public class ImagingActivity extends HiddenCameraActivity {
             e.printStackTrace();
         }
         eventEnd.setTime(eventStart);
-        eventEnd.add(Calendar.MINUTE, 2);
+        eventEnd.add(Calendar.HOUR, 2);
     }
 
 

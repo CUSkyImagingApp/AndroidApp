@@ -206,6 +206,7 @@ public class MainActivity extends AppCompatActivity {
         Context context = getContext();
         String filename = "eventlist.txt";
         File file = new File(context.getFilesDir(), filename);
+        //TODO Need to update Event Times:
         String contents = "2000-01-01 12:00:00\n2010-10-10 10:00:00\n2017-09-17 14:00:00";
         FileOutputStream outputStream;
 
