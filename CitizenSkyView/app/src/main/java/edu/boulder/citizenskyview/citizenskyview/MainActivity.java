@@ -19,18 +19,26 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutCompat;
+import android.text.Layout;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.ArgumentMarshaller;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
@@ -50,6 +58,7 @@ import java.util.TimeZone;
 
 
 import static android.os.SystemClock.uptimeMillis;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -102,9 +111,13 @@ public class MainActivity extends AppCompatActivity {
     private AmazonDynamoDBClient ddbClient;
     private DynamoDBMapper mapper;
 
-    @BindView(R.id.event1) Button event1Box;
-    @BindView(R.id.event2) Button event2Box;
-    @BindView(R.id.event3) Button event3Box;
+    @NonNull
+    @Override
+    public LayoutInflater getLayoutInflater() {
+        return super.getLayoutInflater();
+    }
+
+
     @BindView(R.id.upload_btn) Button uploadBtn;
 
     private boolean skyViewActive = false;
@@ -154,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         //getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+
 
 
 
@@ -176,6 +189,7 @@ public class MainActivity extends AppCompatActivity {
         );
         ddbClient = new AmazonDynamoDBClient(credentialsProvider);
         mapper = new DynamoDBMapper(ddbClient);
+        ButterKnife.bind(this);
 
 
 //        boxButton1 = (Button) findViewById(R.id.event1);
@@ -190,18 +204,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    @OnClick(R.id.event1)
-    public void event1Launch(){
-        launchEvent(1);
-    }
-    @OnClick(R.id.event2)
-    public void event2Launch(){
-        launchEvent(2);
-    }
-    @OnClick(R.id.event3)
-    public void event3Launch(){
-        launchEvent(3);
-    }
+
     @OnClick(R.id.upload_btn)
     public void uploadLaunch(){
         Intent myIntent = new Intent(MainActivity.this, UploadActivity.class);
@@ -216,7 +219,7 @@ public class MainActivity extends AppCompatActivity {
         Context context = getContext();
         String filename = "eventlist.txt";
         File file = new File(context.getFilesDir(), filename);
-        String contents = "2000-01-01 12:00:00\n2010-10-10 10:00:00\n2017-09-17 14:00:00";
+        String contents = "2000-01-01 12:00:00\n2010-10-10 10:00:00\n2017-09-17 14:00:00\n2017-09-17 14:00:00\n2017-09-17 14:00:00\n2017-09-17 14:00:00\n2017-09-17 14:00:00\n2017-09-17 14:00:00\n2017-09-17 14:00:00\n2017-09-17 14:00:00\n2017-09-17 14:00:00\n2017-09-17 14:00:00\n2017-09-17 14:00:00\n2017-09-17 14:00:00";
         FileOutputStream outputStream;
 
         try{
@@ -249,32 +252,57 @@ public class MainActivity extends AppCompatActivity {
         }
         try{
             String[] lines = text.toString().split("\\n");
-            date = lines[(eventNum - 1)];
+            date = lines[(eventNum)];
         } catch(Exception e){
             e.printStackTrace();
         }
-        if (eventNum == 3){
-            String datePattern = "yyyy-MM-dd HH:mm:ss";
-            SimpleDateFormat format = new SimpleDateFormat(datePattern);
-            Date curTime = new Date();
-            date = format.format(curTime);
-        }
+
         return date;
     }
 
     public void updateEventButtons(){
-        String e1String = getDateFromFile(1);
-        String e1FormattedStr = formatEventString(e1String);
-        event1Box.setText(e1FormattedStr);
+        int eventsInFile = 0;
+        String date = getDateFromFile(eventsInFile);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        ConstraintLayout parent = (ConstraintLayout) inflater.inflate(R.layout.activity_main,
+                null);
+        LinearLayout eventL = (LinearLayout) parent.findViewById(R.id.list_event);
+        while(!date.equalsIgnoreCase("1999-01-01 00:00:00")){
+            View EventItem = inflater.inflate(R.layout.event_item, null);
+            Button e = (Button) EventItem.findViewById(R.id.eventbutton);
+            e.setText(formatEventString(date));
+            e.setTag(Integer.toString(eventsInFile));
+            e.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Button bbb = (Button) view;
+                    launchEvent(Integer.parseInt(bbb.getTag().toString()));
+                }
+            });
+            eventL.addView(EventItem);
+            eventsInFile++;
+            date = getDateFromFile(eventsInFile);
+        }
+        String datePattern = "yyyy-MM-dd HH:mm:ss";
+        SimpleDateFormat format = new SimpleDateFormat(datePattern);
+        Date curTime = new Date();
+        date = format.format(curTime);
 
-        String e2String = getDateFromFile(2);
-        String e2FormattedStr = formatEventString(e2String);
-        event2Box.setText(e2FormattedStr);
+        View EventItem = inflater.inflate(R.layout.event_item, null);
+        Button e = (Button) EventItem.findViewById(R.id.eventbutton);
+        e.setText(formatEventString(date));
+        e.setTag(Integer.toString(-1));
+        e.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Button bbb = (Button) view;
+                launchEvent(Integer.parseInt(bbb.getTag().toString()));
+            }
+        });
+        eventL.addView(EventItem);
 
-        String e3String = getDateFromFile(3);
-        String e3FormattedStr = formatEventString(e3String);
-        event3Box.setText(e3FormattedStr);
-
+        setContentView(parent);
+        ButterKnife.bind(this);
 
     }
 
@@ -299,7 +327,13 @@ public class MainActivity extends AppCompatActivity {
     public void launchEvent(int eventNum){
         String datePattern = "yyyy-MM-dd HH:mm:ss";
         SimpleDateFormat dateFormat = new SimpleDateFormat(datePattern);
-        String dateStr = getDateFromFile(eventNum);
+        String dateStr = "";
+        if(eventNum == -1){
+            Date curTime = new Date();
+            dateStr = dateFormat.format(curTime);
+        }else{
+            dateStr = getDateFromFile(eventNum);
+        }
         Date curTime = new Date();
         Date eDate = new Date();
         try{
