@@ -3,16 +3,16 @@ import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.*;
 /**
  * Created by Nicholas on 7/20/2017.
  */
-@DynamoDBTable(tableName = "Events")
-class SkyViewEvent {
+@DynamoDBTable(tableName = "Event")
+public class SkyViewEvent {
 
     private String eventName;
     private String end;
     private String start;
-    private String name;
+    private String num;
 
-    @DynamoDBHashKey(attributeName = "EventName")
-    public String getEvetName() {
+    @DynamoDBIndexRangeKey(attributeName = "EventName")
+    public String getEventName() {
         return eventName;
     }
 
@@ -39,12 +39,12 @@ class SkyViewEvent {
         this.start = start;
     }
 
-    @DynamoDBAttribute(attributeName = "Name")
-    public String getName() {
-        return name;
+    @DynamoDBHashKey(attributeName = "Num")
+    public String getNum() {
+        return num;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setNum(String num) {
+        this.num = num;
     }
 }

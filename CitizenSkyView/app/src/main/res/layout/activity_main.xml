@@ -4,51 +4,56 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     tools:context="edu.boulder.citizenskyview.citizenskyview.MainActivity">
 
 
-
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="381dp"
-        android:layout_height="455dp"
-        tools:context="com.aziflaj.todolist.MainActivity"
-        android:layout_marginRight="8dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginLeft="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginBottom="8dp"
+    <ScrollView
+        android:id="@+id/relativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="64dp"
+        android:layout_marginTop="20dp"
+        android:paddingTop="?android:attr/actionBarSize"
+        android:clipToPadding="true"
         app:layout_constraintBottom_toTopOf="@+id/upload_btn"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="8dp">
+        app:layout_constraintVertical_bias="0.0">
 
-        <ScrollView
-
+        <LinearLayout
+            android:id="@+id/list_event"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <LinearLayout
-                android:id="@+id/list_event"
-                android:orientation="vertical"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"></LinearLayout>
-        </ScrollView>
-    </RelativeLayout>
-
+            android:layout_height="match_parent"
+            android:orientation="vertical"></LinearLayout>
+    </ScrollView>
 
     <Button
         android:id="@+id/upload_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
         android:backgroundTint="@color/colorGold"
         android:text="@string/upload"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp" />
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <Button
+        android:id="@+id/refresh_btn"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="4dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@drawable/ic_autorenew_black_48dp"
+        android:backgroundTint="@color/colorGold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

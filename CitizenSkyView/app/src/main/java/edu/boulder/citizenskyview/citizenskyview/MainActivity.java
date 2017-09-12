@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -40,6 +41,9 @@ import butterknife.OnClick;
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.ArgumentMarshaller;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBScanExpression;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.PaginatedScanList;
+import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 
@@ -51,8 +55,11 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -77,21 +84,21 @@ public class MainActivity extends AppCompatActivity {
     SkyViewPhoto p1 = new SkyViewPhoto();*/
 
 
-    Handler tempH = new Handler();
-    int delay = 30000; //30 seconds
-    Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            dispatchTakePictureIntent();
-        }
-    };
-
-    public void takeNphotos(int N){
-        long currentTime = uptimeMillis();
-        for (;N>0;N--) {
-            tempH.postAtTime(runnable, currentTime+delay*N);
-        }
-    }
+//    Handler tempH = new Handler();
+//    int delay = 30000; //30 seconds
+//    Runnable runnable = new Runnable() {
+//        @Override
+//        public void run() {
+//            dispatchTakePictureIntent();
+//        }
+//    };
+//
+//    public void takeNphotos(int N){
+//        long currentTime = uptimeMillis();
+//        for (;N>0;N--) {
+//            tempH.postAtTime(runnable, currentTime+delay*N);
+//        }
+//    }
 
     private String APIKey = BuildConfig.AMAZON_API_KEY;
 
@@ -110,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
     private CognitoCachingCredentialsProvider credentialsProvider;
     private AmazonDynamoDBClient ddbClient;
     private DynamoDBMapper mapper;
+    List<SkyViewEvent> LSVE;
 
     @NonNull
     @Override
@@ -119,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     @BindView(R.id.upload_btn) Button uploadBtn;
+    @BindView(R.id.refresh_btn) Button refreshBtn;
 
     private boolean skyViewActive = false;
     private ImageReader skyViewImageReader;
@@ -161,14 +170,24 @@ public class MainActivity extends AppCompatActivity {
     private File skyViewImageFolder;
     private String skyViewImageName;
 
+
+    Runnable getEvents = new Runnable() {
+        @Override
+        public void run() {
+//            SkyViewEvent sve = new SkyViewEvent();
+//            SkyViewEvent selectedEvent = mapper.load(SkyViewEvent.class, "1");
+//            String start = selectedEvent.getStart();
+            DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
+            LSVE = mapper.scan(SkyViewEvent.class, scanExpression);
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mContext = MainActivity.this;
+        supportRequestWindowFeature(Window.FEATURE_ACTION_MODE_OVERLAY);
         super.onCreate(savedInstanceState);
-        //getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         setContentView(R.layout.activity_main);
-
-
 
 
         setupCamera();
@@ -188,40 +207,65 @@ public class MainActivity extends AppCompatActivity {
                 Regions.US_WEST_2
         );
         ddbClient = new AmazonDynamoDBClient(credentialsProvider);
+        ddbClient.setRegion(Region.getRegion(Regions.US_WEST_2));
         mapper = new DynamoDBMapper(ddbClient);
         ButterKnife.bind(this);
 
-
-//        boxButton1 = (Button) findViewById(R.id.event1);
-//        boxButton1.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Toast.makeText(MainActivity.this, "Starting sky capture", Toast.LENGTH_SHORT).show();
-//                skyViewActive = true;
-//                checkWriteToExternalStoragePermission();
-//            }
-//        });
 
     }
 
 
     @OnClick(R.id.upload_btn)
     public void uploadLaunch(){
-        Intent myIntent = new Intent(MainActivity.this, UploadActivity.class);
-        startActivity(myIntent);
-    }
-
-    public void getEventFromServer(){
-
-    }
-
-    public void updateEventFile(){
+//        Intent myIntent = new Intent(MainActivity.this, UploadActivity.class);
+//        startActivity(myIntent);
         Context context = getContext();
         String filename = "eventlist.txt";
         File file = new File(context.getFilesDir(), filename);
-        String contents = "2000-01-01 12:00:00\n2010-10-10 10:00:00\n2017-09-17 14:00:00\n2017-09-17 14:00:00\n2017-09-17 14:00:00\n2017-09-17 14:00:00\n2017-09-17 14:00:00\n2017-09-17 14:00:00\n2017-09-17 14:00:00\n2017-09-17 14:00:00\n2017-09-17 14:00:00\n2017-09-17 14:00:00\n2017-09-17 14:00:00\n2017-09-17 14:00:00";
-        FileOutputStream outputStream;
+        if (file.exists()){
+            file.delete();
+        }
+    }
 
+    @OnClick(R.id.refresh_btn)
+    public void refreshEvents(){
+        Thread mthread = new Thread(getEvents);
+        mthread.start();
+        String contents = "";
+        List<Date> startDates = new ArrayList<Date>();
+        Date sDate = new Date();
+        String start = "";
+        String datePattern = "yyyy-MM-dd HH:mm:ss";
+        SimpleDateFormat dateFormat = new SimpleDateFormat(datePattern);
+        try{
+            mthread.join();
+            for(SkyViewEvent event : LSVE){
+                start = event.getStart().toString();
+                try{
+                    sDate = dateFormat.parse(start);
+                } catch(ParseException e) {
+                    e.printStackTrace();
+                }
+                startDates.add(sDate);
+
+            }
+            Collections.sort(startDates);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        for(Date date : startDates){
+            start = dateFormat.format(date);
+            if(contents == ""){
+                contents = start;
+            } else{
+                contents = contents + "\n" + start;
+            }
+        }
+        Context context = getContext();
+        String filename = "eventlist.txt";
+        File file = new File(context.getFilesDir(), filename);
+        FileOutputStream outputStream;
         try{
             outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
             outputStream.write(contents.getBytes());
@@ -230,6 +274,41 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, "File Failed", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
+        updateEventButtons();
+    }
+
+    public void getEventFromServer(){
+
+    }
+
+    public void db(){
+        DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
+        List<SkyViewEvent> result = mapper.scan(SkyViewEvent.class, scanExpression);
+        for (SkyViewEvent event : result){
+            String start = event.getStart().toString();
+            Toast.makeText(MainActivity.this, start, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void updateEventFile(){
+        Context context = getContext();
+        String filename = "eventlist.txt";
+        String contents = "";
+        File file = new File(context.getFilesDir(), filename);
+        if (!file.exists()){
+            contents = "1999-01-01 12:00:00";
+            FileOutputStream outputStream;
+            try{
+                outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+                outputStream.write(contents.getBytes());
+                outputStream.close();
+            } catch (Exception e){
+                Toast.makeText(MainActivity.this, "File Failed", Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+            }
+        }else{
+        }
+
     }
 
     public String getDateFromFile(int eventNum){
@@ -288,18 +367,18 @@ public class MainActivity extends AppCompatActivity {
         Date curTime = new Date();
         date = format.format(curTime);
 
-        View EventItem = inflater.inflate(R.layout.event_item, null);
-        Button e = (Button) EventItem.findViewById(R.id.eventbutton);
-        e.setText(formatEventString(date));
-        e.setTag(Integer.toString(-1));
-        e.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Button bbb = (Button) view;
-                launchEvent(Integer.parseInt(bbb.getTag().toString()));
-            }
-        });
-        eventL.addView(EventItem);
+//        View EventItem = inflater.inflate(R.layout.event_item, null);
+//        Button e = (Button) EventItem.findViewById(R.id.eventbutton);
+//        e.setText(formatEventString(date));
+//        e.setTag(Integer.toString(-1));
+//        e.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Button bbb = (Button) view;
+//                launchEvent(Integer.parseInt(bbb.getTag().toString()));
+//            }
+//        });
+//        eventL.addView(EventItem);
 
         setContentView(parent);
         ButterKnife.bind(this);
@@ -308,7 +387,7 @@ public class MainActivity extends AppCompatActivity {
 
     private String formatEventString(String dateStr) {
         String datePattern = "yyyy-MM-dd HH:mm:ss";
-        String eventPattern = "EEE, MMM d hh:mma";
+        String eventPattern = "EEE, MMM d h:mma";
         SimpleDateFormat dateFormat = new SimpleDateFormat(datePattern);
         SimpleDateFormat eventFormat = new SimpleDateFormat(eventPattern);
         Date eventDate = new Date();
