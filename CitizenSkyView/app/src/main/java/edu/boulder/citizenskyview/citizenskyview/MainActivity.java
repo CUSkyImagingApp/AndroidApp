@@ -12,8 +12,10 @@ import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.media.ImageReader;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -26,6 +28,7 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.text.Layout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -46,6 +49,8 @@ import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.PaginatedScanLis
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+
+import com.instacart.library.truetime.TrueTime;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -101,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
 //    }
 
     private String APIKey = BuildConfig.AMAZON_API_KEY;
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     private static final int requestCamera = 1;
     private static final int requestWrite = 1;
@@ -170,6 +176,43 @@ public class MainActivity extends AppCompatActivity {
     private File skyViewImageFolder;
     private String skyViewImageName;
 
+    CountDownTimer trueTimeWait = new CountDownTimer(10000,1000) {
+        @Override
+        public void onTick(long millisUntilFinished) {
+            if(!TrueTime.isInitialized()){
+                new MainActivity.InitTrueTimeAsyncTask().execute();
+            }
+            else{
+                Toast.makeText(MainActivity.this, "Your phone time is synced", Toast.LENGTH_SHORT).show();
+                trueTimeWait.cancel();
+            }
+        }
+
+        @Override
+        public void onFinish() {
+            Toast.makeText(MainActivity.this, "Unable to sync phone time, please refresh again", Toast.LENGTH_SHORT).show();
+        }
+    };
+
+    //UPDATE Initialize TrueTime object
+    private class InitTrueTimeAsyncTask
+            extends AsyncTask<Void, Void, Void> {
+
+        protected Void doInBackground(Void... params) {
+            try {
+                TrueTime.build()
+                        .withNtpHost("0.north-america.pool.ntp.org")
+                        .withLoggingEnabled(false)
+                        .withConnectionTimeout(3_1428)
+                        .initialize();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e(TAG, "Exception when trying to get TrueTime", e);
+            }
+            return null;
+        }
+    }
+
 
     Runnable getEvents = new Runnable() {
         @Override
@@ -217,14 +260,8 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.upload_btn)
     public void uploadLaunch(){
-//        Intent myIntent = new Intent(MainActivity.this, UploadActivity.class);
-//        startActivity(myIntent);
-        Context context = getContext();
-        String filename = "eventlist.txt";
-        File file = new File(context.getFilesDir(), filename);
-        if (file.exists()){
-            file.delete();
-        }
+        Intent myIntent = new Intent(MainActivity.this, UploadActivity.class);
+        startActivity(myIntent);
     }
 
     @OnClick(R.id.refresh_btn)
@@ -275,6 +312,7 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         updateEventButtons();
+        syncTrueTime();
     }
 
     public void getEventFromServer(){
@@ -337,6 +375,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return date;
+    }
+
+    public void syncTrueTime(){
+        trueTimeWait.start();
     }
 
     public void updateEventButtons(){
