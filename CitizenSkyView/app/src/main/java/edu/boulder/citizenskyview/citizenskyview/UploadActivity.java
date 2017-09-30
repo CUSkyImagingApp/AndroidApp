@@ -89,12 +89,15 @@ public class UploadActivity extends AppCompatActivity {
                         file
                 );
                 observer.setTransferListener(new TransferListener(){
+                    boolean errored = false;
 
                     @Override
                     public void onStateChanged(int id, TransferState state) {
                         // do something
                         if (state.equals(TransferState.COMPLETED)){
-                            delete();
+                            if(!errored) {
+                                delete();
+                            }
 
                         }
                     }
@@ -107,7 +110,7 @@ public class UploadActivity extends AppCompatActivity {
                     @Override
                     public void onError(int id, Exception ex) {
                         Toast.makeText(UploadActivity.this, "Error", Toast.LENGTH_SHORT).show();
-                        // do something
+                        errored = true;
                     }
 
                 });
