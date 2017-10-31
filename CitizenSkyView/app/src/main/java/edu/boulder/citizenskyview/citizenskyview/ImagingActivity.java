@@ -67,6 +67,7 @@ public class ImagingActivity extends HiddenCameraActivity {
     Date eventStart = new Date();
     Calendar eventEnd = Calendar.getInstance();
     Vibrator v;
+    String uid;
 
 
 
@@ -162,6 +163,7 @@ public class ImagingActivity extends HiddenCameraActivity {
 //                syncNow();
 //            }
 //        });
+        uid = myIntent.getStringExtra("uid");
         getPhoneLocation();
         setTime();
         syncNow();
@@ -271,13 +273,14 @@ public class ImagingActivity extends HiddenCameraActivity {
         SimpleDateFormat dateFormat = new SimpleDateFormat(datePattern);
         Intent myIntent = getIntent();
         String dateStr = myIntent.getStringExtra("Date");
+        String dateEnd = myIntent.getStringExtra("EndDate");
         try{
             eventStart = dateFormat.parse(dateStr);
+            eventEnd.setTime(dateFormat.parse(dateEnd));
         } catch(ParseException e) {
             e.printStackTrace();
         }
-        eventEnd.setTime(eventStart);
-        eventEnd.add(Calendar.MINUTE, 60);
+
     }
 
 
@@ -293,7 +296,7 @@ public class ImagingActivity extends HiddenCameraActivity {
         } else {
             s = "30";
         }
-        String ret = latitude + "_" + longitude + "_" + a + "_" + p + "_" + r + "_" + d + "T" + h + "_" + m + "_" + s;
+        String ret = uid + "_" + latitude + "_" + longitude + "_" + a + "_" + p + "_" + r + "_" + d + "T" + h + "_" + m + "_" + s;
         re = ret.replace(".", ",");
         return re;
     }
