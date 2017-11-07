@@ -42,8 +42,7 @@
         <activity
             android:name=".MainActivity"
             android:label="CitizenSkyView"
-            android:theme="@style/AppTheme">
-        </activity>
+            android:theme="@style/AppTheme"></activity>
         <activity
             android:name=".EventActivity"
             android:theme="@style/AppTheme" />
@@ -66,6 +65,7 @@
         <service
             android:name="com.amazonaws.mobileconnectors.s3.transferutility.TransferService"
             android:enabled="true" />
+
     </application>
 
 </manifest>

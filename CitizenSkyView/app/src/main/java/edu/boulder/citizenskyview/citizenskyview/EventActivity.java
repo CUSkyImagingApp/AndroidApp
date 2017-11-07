@@ -42,7 +42,11 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
     float[] mGravity;
     float[] mGeomagnetic;
     float azimuth;
+    float pitch;
+    float roll;
     String a =  "0";
+    String p = "0";
+    String r = "0";
     String eventStart;
     boolean calibrated = false;
     boolean launch = false;
@@ -66,7 +70,8 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
             }
         }
         public void onFinish(){
-            northFailed();
+//            northFailed();
+            startImaging();
         }
     };
     CountDownTimer waitEvent = new CountDownTimer(4000, 4000) {
@@ -173,6 +178,8 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
         else{
             Intent myIntent = new Intent(EventActivity.this, ImagingActivity.class);
             myIntent.putExtra("azimuth", a);
+            myIntent.putExtra("pitch", p);
+            myIntent.putExtra("roll", r);
             myIntent.putExtra("Date", eventStart);
             startActivityForResult(myIntent, IMAGING_REQUEST);
         }
@@ -220,12 +227,16 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
                 SensorManager.getOrientation(R, orientation);
 
                 azimuth = orientation[0];
+                pitch = orientation[1];
+                roll = orientation[2];
             }
         }
         a = String.valueOf(azimuth);
+        p = String.valueOf(pitch);
+        r = String.valueOf(roll);
 
         //UPDATE If compass direction is between 0.2 and -0.2 Radians stop the vibration
-        if(Float.valueOf(a) > -0.1 && Float.valueOf(a) < 0.1 ){
+        if(Float.valueOf(a) > -0.15 && Float.valueOf(a) < 0.15 ){
             north = true;
         } else {
             north = false;

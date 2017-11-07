@@ -62,9 +62,12 @@ public class ImagingActivity extends HiddenCameraActivity {
     String longitude;
     String latitude;
     String a =  "0";
+    String p = "0";
+    String r = "0";
     Date eventStart = new Date();
     Calendar eventEnd = Calendar.getInstance();
     Vibrator v;
+    String uid;
 
 
 
@@ -75,7 +78,7 @@ public class ImagingActivity extends HiddenCameraActivity {
 
             int second = 61;
             Date curTime = TrueTime.now();
-            while (num < 240 && eventStart.compareTo(curTime) * curTime.compareTo(eventEnd.getTime()) >= 0) {
+            while (num < 60 && eventStart.compareTo(curTime) * curTime.compareTo(eventEnd.getTime()) >= 0) {
                 while (second % 30 != 0) {
                     try {
                         Thread.sleep(1000);
@@ -131,6 +134,8 @@ public class ImagingActivity extends HiddenCameraActivity {
 
         Intent myIntent = getIntent();
         a = myIntent.getStringExtra("azimuth");
+        p = myIntent.getStringExtra("pitch");
+        r = myIntent.getStringExtra("roll");
 
         mCameraConfig = new CameraConfig()
                 .getBuilder(this)
@@ -158,6 +163,7 @@ public class ImagingActivity extends HiddenCameraActivity {
 //                syncNow();
 //            }
 //        });
+        uid = myIntent.getStringExtra("uid");
         getPhoneLocation();
         setTime();
         syncNow();
@@ -215,7 +221,7 @@ public class ImagingActivity extends HiddenCameraActivity {
     }
 
     public String getPhoneLocation(){
-        String r = "";
+        String re = "";
         LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         Location location;
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
@@ -249,7 +255,7 @@ public class ImagingActivity extends HiddenCameraActivity {
             location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             longitude = Double.toString(location.getLongitude());
             latitude = Double.toString(location.getLatitude());
-            r = latitude + longitude;
+            re = latitude + longitude;
         } else {
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
 //            Toast.makeText(ImagingActivity.this, "Need Location Permission", Toast.LENGTH_LONG).show();
@@ -259,7 +265,7 @@ public class ImagingActivity extends HiddenCameraActivity {
 //            finish();
         }
 
-        return r;
+        return re;
     }
 
     public void setTime(){
@@ -267,19 +273,20 @@ public class ImagingActivity extends HiddenCameraActivity {
         SimpleDateFormat dateFormat = new SimpleDateFormat(datePattern);
         Intent myIntent = getIntent();
         String dateStr = myIntent.getStringExtra("Date");
+        String dateEnd = myIntent.getStringExtra("EndDate");
         try{
             eventStart = dateFormat.parse(dateStr);
+            eventEnd.setTime(dateFormat.parse(dateEnd));
         } catch(ParseException e) {
             e.printStackTrace();
         }
-        eventEnd.setTime(eventStart);
-        eventEnd.add(Calendar.MINUTE, 2);
+
     }
 
 
 
     public String generateName(){
-        String r = "";
+        String re = "";
         String d = getDay();
         String h = Integer.toString(getHour());
         String m = Integer.toString(getMinute());
@@ -289,9 +296,9 @@ public class ImagingActivity extends HiddenCameraActivity {
         } else {
             s = "30";
         }
-        String ret = latitude + "_" + longitude + "_" + a + "_" + d + "T" + h + "_" + m + "_" + s;
-        r = ret.replace(".", ",");
-        return r;
+        String ret = uid + "_" + latitude + "_" + longitude + "_" + a + "_" + p + "_" + r + "_" + d + "T" + h + "_" + m + "_" + s;
+        re = ret.replace(".", ",");
+        return re;
     }
 
 
